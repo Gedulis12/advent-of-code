@@ -38,7 +38,12 @@ int main(int argc, char **argv)
 		second_half[half] = '\0';
 		find_duplicate_letter(half, first_half, second_half, &duplicate_letter);
 		score = get_priority_score(duplicate_letter);
-		printf("%s: %s%s: %s\n%s: %s\n%s: %c\n%s: %d\n\n", "Line", line, "First half", first_half, "Second half", second_half, "Common letter", duplicate_letter, "Score", score);
+		printf("%s: %s%s: %s\n%s: %s\n%s: %c\n%s: %d\n\n",
+			       	"Line", line,
+			       	"First half", first_half,
+			       	"Second half", second_half,
+			       	"Common letter", duplicate_letter,
+			       	"Score", score);
  		total += score;
 
 	}
