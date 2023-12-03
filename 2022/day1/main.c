@@ -39,7 +39,7 @@ void print_dyn_array(const struct dyn_array *array)
 {
 	for (int i = 0; i < array->size; i++)
 	{
-		printf("%d ", array->data[1]);
+		printf("%d ", array->data[i]);
 	}
 	printf("\n");
 }

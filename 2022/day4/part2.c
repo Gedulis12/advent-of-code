@@ -25,15 +25,13 @@ int main(int argc, char **argv)
 
     while (fgets(line, MAX_LINE_LENGTH, file))
     {
-        // find if the inner pairs highest value is less or equal than outer pairs highest value
-        // if yes we have an overlap:
-        // ..3456.... outer pair
-        // ...45..... inner pair
         int ints[4];
-        char *pair_1 = strtok(line, ",");
-        char *pair_2 = strtok(NULL, ",");
         int inner_pair_index;
         int outer_pair_index;
+        memset(&ints[0], 0, sizeof ints);
+
+        char *pair_1 = strtok(line, ",");
+        char *pair_2 = strtok(NULL, ",");
 
         ints[0] = atoi(strtok(pair_1, "-"));
         ints[1] = atoi(strtok(NULL, "-"));
@@ -41,22 +39,11 @@ int main(int argc, char **argv)
         ints[2] = atoi(strtok(pair_2, "-"));
         ints[3] = atoi(strtok(NULL, "-"));
 
-        if (ints[0] > ints[2])
+
+        if ((ints[0] <= ints[3] && ints[1] >= ints[2]) || (ints[2] <= ints[1] && ints[3] >= ints[0]))
         {
-            inner_pair_index = 0;
-            outer_pair_index = 2;
-        }
-        else
-        {
-            inner_pair_index = 2;
-            outer_pair_index = 0;
-        }
-        if (ints[(inner_pair_index + 1)] <= ints[(outer_pair_index + 1)])
-        {
-            printf("%s %s\n", line, "yes");
             final_count += 1;
         }
-
     }
     
     printf("%s: %d\n", "final count", final_count);
