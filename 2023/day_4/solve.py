@@ -1,7 +1,7 @@
 from card import Card
 from collections import defaultdict
 
-INPUT = './input.bak'
+INPUT = './input'
 part_1_sum = 0
 
 
