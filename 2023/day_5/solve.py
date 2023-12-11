@@ -1,7 +1,7 @@
-INPUT = './input'
+INPUT = './example'
 
 
-def get_seed_range_dict(file):
+def get_seed_range_list(file):
     with open(INPUT, 'r') as f:
         lines = f.readlines()
         seed_list = [
@@ -12,23 +12,16 @@ def get_seed_range_dict(file):
                 line][0]
         f.close()
 
-    chunked_list = list()
+    range_list = list()
     chunk_size = 2
 
     for i in range(0, len(seed_list), chunk_size):
-        chunked_list.append(seed_list[i:i+chunk_size])
+        start = int(seed_list[i])
+        end = int(seed_list[i]) + int(seed_list[i+1]) - 1
+        seed_range = (start, end)
+        range_list.append(seed_range)
 
-    seed_dict = {}
-    for i in range(len(chunked_list)):
-        start = chunked_list[i][0]
-        _range = chunked_list[i][1]
-        end = int(start) + int(_range) - 1
-
-        seed_dict[f'map_{i+1}'] = {}
-        seed_dict[f'map_{i+1}']['start'] = int(start)
-        seed_dict[f'map_{i+1}']['end'] = int(end)
-
-    return seed_dict
+    return range_list
 
 
 with open(INPUT, 'r') as f:
@@ -40,103 +33,104 @@ with open(INPUT, 'r') as f:
             'seeds:' in
             line][0]
 
+    mappings = []
     for i in range(len(lines)):
         if 'seed-to-soil map:' in lines[i]:
             seed_to_soil = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                seed_to_soil.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                seed_to_soil.append(mapping_tuple)
                 j += 1
+            mappings.append(seed_to_soil)
         elif 'soil-to-fertilizer map:' in lines[i]:
             soil_to_fert = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                soil_to_fert.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                soil_to_fert.append(mapping_tuple)
                 j += 1
+            mappings.append(soil_to_fert)
         elif 'fertilizer-to-water map:' in lines[i]:
             fert_to_water = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                fert_to_water.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                fert_to_water.append(mapping_tuple)
                 j += 1
+            mappings.append(fert_to_water)
         elif 'water-to-light map:' in lines[i]:
             water_to_light = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                water_to_light.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                water_to_light.append(mapping_tuple)
                 j += 1
+            mappings.append(water_to_light)
         elif 'light-to-temperature map:' in lines[i]:
             light_to_temp = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                light_to_temp.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                light_to_temp.append(mapping_tuple)
                 j += 1
+            mappings.append(light_to_temp)
         elif 'temperature-to-humidity map:' in lines[i]:
             temp_to_hum = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                temp_to_hum.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                temp_to_hum.append(mapping_tuple)
                 j += 1
+            mappings.append(temp_to_hum)
         elif 'humidity-to-location map:' in lines[i]:
             hum_to_loc = []
             j = 1
             while i+j < len(lines) and lines[i+j] != '\n':
-                hum_to_loc.append(lines[i+j].strip().split(' '))
+                dst_start = lines[i+j].strip().split(' ')[0]
+                src_start = lines[i+j].strip().split(' ')[1]
+                range_len = lines[i+j].strip().split(' ')[2]
+                mapping_tuple = (dst_start, src_start, range_len)
+                hum_to_loc.append(mapping_tuple)
                 j += 1
+            mappings.append(hum_to_loc)
     f.close()
 
 
-def list_to_map(in_list):
-    out_map = {
-        f"map_{i}": {
-            'dst_range_start': int(dst),
-            'src_range_start': int(src),
-            'range_len': int(length)
-        }
-        for i, (dst, src, length) in enumerate(in_list, start=1)
-    }
-    return out_map
+def get_location_from_seed(seed, mappings):
+    for mapping in mappings:
+        for map in mapping:
+            dst_start, src_start, range_len = map
+            src_end = int(src_start) + int(range_len) - 1
+            if (int(src_start) <= int(seed) <= int(src_end)):
+                seed = int(seed) - int(src_start) + int(dst_start)
+                break
+    return seed
 
 
-seed_to_soil_map = list_to_map(seed_to_soil)
-soil_to_fert_map = list_to_map(soil_to_fert)
-fert_to_water_map = list_to_map(fert_to_water)
-water_to_light_map = list_to_map(water_to_light)
-light_to_temp_map = list_to_map(light_to_temp)
-temp_to_hum_map = list_to_map(temp_to_hum)
-hum_to_loc_map = list_to_map(hum_to_loc)
-
-
-def get_mapping(input, map):
-    for s in map:
-        input = int(input)
-        mapping = input
-        for s in map:
-            start = map[s]['src_range_start']
-            end = start + map[s]['range_len']
-            if input >= start and input <= end:
-                mapping = input - start + map[s]['dst_range_start']
-                return mapping
-    return mapping
-
-
-def get_location_from_seed(seed):
-    soil = get_mapping(seed, seed_to_soil_map)
-    fertilizer = get_mapping(soil, soil_to_fert_map)
-    water = get_mapping(fertilizer, fert_to_water_map)
-    light = get_mapping(water, water_to_light_map)
-    temp = get_mapping(light, light_to_temp_map)
-    hum = get_mapping(temp, temp_to_hum_map)
-    location = get_mapping(hum, hum_to_loc_map)
-
-    return location
-
-
-def get_min_location(seeds):
-    min_location = get_location_from_seed(seeds[0])
+def get_min_location(seeds, mappings):
+    min_location = get_location_from_seed(seeds[0], mappings)
 
     for seed in seeds:
-        location = get_location_from_seed(seed)
+        location = get_location_from_seed(seed, mappings)
 
         if location < min_location:
             min_location = location
@@ -144,70 +138,126 @@ def get_min_location(seeds):
     return min_location
 
 
-range_dict = get_seed_range_dict(INPUT)
+seeds = get_seed_range_list(INPUT)
 
 
-def optimize_range_dict(tange_dict):
-    for i in range_dict:
-        for j in range_dict:
-            if (
-                    range_dict[i]['start'] > range_dict[j]['start']
-                    and
-                    range_dict[i]['start'] < range_dict[j]['end']
-                    ):
-                if range_dict[i]['end'] < range_dict[j]['end']:
-                    range_dict[i]['start'] = range_dict[i]['end'] = 0
-                elif range_dict[i]['end'] > range_dict[j]['end']:
-                    range_dict[i]['start'] = range_dict[j]['end']
-            if (
-                    range_dict[i]['end'] > range_dict[j]['start']
-                    and
-                    range_dict[i]['end'] < range_dict[j]['end']
-                    ):
-                if range_dict[i]['start'] > range_dict[j]['start']:
-                    range_dict[i]['end'] = range_dict[j]['start']
-    return range_dict
+def split_range_by_mapping(seed_range, mapping):
+    range_start, range_end = seed_range
+    range_start = int(range_start)
+    range_end = int(range_end)
+
+    ranges = list()
+    for map in mapping:
+        #print(f'current map: {map}')
+        dst_start, src_start, range_len = map
+
+        dst_start = int(dst_start)
+        src_start = int(src_start)
+
+        src_end = int(src_start) + int(range_len) - 1
+        src_end = int(src_end)
+
+        dst_end = int(dst_start) + int(range_len) - 1
+        dst_end = int(dst_end)
+
+        # all range within mapping
+        if (src_start <= range_start <= src_end and
+                src_start <= range_end <= src_end):
+            mapped_range_start = range_start - src_start + dst_start
+            mapped_range_end = range_end - src_start + dst_start
+            curr_range = (mapped_range_start, mapped_range_end)
+
+            if (curr_range not in ranges):
+                ranges.append(curr_range)
+                #print(f'all range within mapping, produced: {curr_range}')
 
 
-def get_min_location_from_dict(range_dict):
-    mins = []
+        # only end of the range included in mapping
+        elif (range_start <= src_start and
+                range_end >= src_start and
+                range_end <= src_end):
+            unmapped_range_start = range_start
+            unmapped_range_end = src_start - 1
+            range_1 = (unmapped_range_start, unmapped_range_end)
 
-    for i in range_dict:
-        range_list = []
-        start = range_dict[i]['start']
-        end = range_dict[i]['end']
-        idx = 0
-        count = 1
+            mapped_range_start = dst_start
+            mapped_range_end = range_end - src_start + dst_start
+            range_2 = (mapped_range_start, mapped_range_end)
+            print(f'only end of the range in mapping, produced: {range_1}, {range_2}')
 
-        if end - start > 250000:
+            if (range_1 not in ranges):
+                ranges.append(range_1)
+                print(f'only end of the range in mapping, produced: {range_1}')
+            if (range_2 not in ranges):
+                ranges.append(range_2)
+                print(f'only end of the range in mapping, produced: {range_2}')
 
-            for j in range(start, end):
-                range_list.append(j)
-                idx += 1
+        # only start of the range included in mapping
+        elif (range_start >= src_start and
+                range_start <= src_end and
+                range_end >= src_end):
 
-                if idx >= 250000:
-                    print(f"checking map {i}, checked {count * 250000}/{end-start}")
-                    count += 1
-                    idx = 0
-                    min_check = get_min_location(range_list)
-                    mins.append(min_check)
-                    range_list = []
+            mapped_range_start = range_start - src_start + dst_start
+            mapped_range_end = dst_end
+            range_1 = (mapped_range_start, mapped_range_end)
 
-            min_check = get_min_location(range_list)
-            mins.append(min_check)
+            unmapped_range_start = src_end + 1
+            unmapped_range_end = range_end
+            range_2 = (unmapped_range_start, unmapped_range_end)
+            #print(f'only start of the range in mapping, produced: {range_1}, {range_2}')
 
+            if (range_1 not in ranges):
+                ranges.append(range_1)
+                #print(f'only start of the range in mapping, produced: {range_1}')
+            if (range_2 not in ranges):
+                ranges.append(range_2)
+                #print(f'only start of the range in mapping, produced: {range_2}')
+        # range outside of mapping
         else:
+            curr_range = (range_start, range_end)
 
-            for j in range(start, end):
-                range_list.append(j)
+            if (curr_range not in ranges):
+                if(curr_range == (range_start, range_end) and len(ranges) > 0 ):
+                    continue
+                else:
+                    ranges.append(curr_range)
+                #print(f'all range outside mapping, produced: {curr_range}')
 
-            min_check = get_min_location(range_list)
-            mins.append(min_check)
-    return min(mins)
+    if len(ranges) > 1 and ranges[0] == (range_start, range_end):
+        return ranges[1:]
+    else:
+        return ranges
 
 
+def get_seeds_to_check(seeds_ranges, mappings):
+    seeds_to_check = list()
+    ranges = list()
+    for r in seeds_ranges:
+        new_ranges = [r]
+        for mapping in mappings:
+            #print(f'START: mapping ranges: {new_ranges}')
+            temp = list()
+            for nr in new_ranges:
+                #print(f'mapping range: {nr}')
+                new_range = split_range_by_mapping(nr, mapping)
+                for n in new_range:
+                    temp.append(n)
+                #print(f'produced new range: {new_range}')
+            new_ranges = []
+            for t in temp:
+                new_ranges.append(t)
+            #print(f'DONE: produced new ranges: {new_ranges}\n')
+        ranges.append(new_ranges)
 
-optimized_dict = optimize_range_dict(range_dict)
-print(optimized_dict)
-ans_2 = get_min_location_from_dict(optimized_dict)
-print(ans_2)
+        for r in ranges:
+            for range_tuple in r:
+                seeds_to_check.append(range_tuple[0])
+
+    print(ranges)
+    print(seeds_to_check)
+    return seeds_to_check
+
+
+seeds_to_check = get_seeds_to_check(seeds, mappings)
+min = get_min_location(seeds_to_check, mappings)
+print(min)
