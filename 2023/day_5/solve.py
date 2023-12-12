@@ -1,4 +1,4 @@
-INPUT = './example'
+INPUT = './input'
 
 
 def get_seed_range_list(file):
@@ -148,7 +148,7 @@ def split_range_by_mapping(seed_range, mapping):
 
     ranges = list()
     for map in mapping:
-        #print(f'current map: {map}')
+        print(f'current map: {map}')
         dst_start, src_start, range_len = map
 
         dst_start = int(dst_start)
@@ -169,13 +169,14 @@ def split_range_by_mapping(seed_range, mapping):
 
             if (curr_range not in ranges):
                 ranges.append(curr_range)
-                #print(f'all range within mapping, produced: {curr_range}')
+                print(f'all range within mapping, produced: {curr_range}')
+            continue
 
 
         # only end of the range included in mapping
-        elif (range_start <= src_start and
+        if (range_start < src_start and
                 range_end >= src_start and
-                range_end <= src_end):
+                range_end < src_end):
             unmapped_range_start = range_start
             unmapped_range_end = src_start - 1
             range_1 = (unmapped_range_start, unmapped_range_end)
@@ -193,9 +194,9 @@ def split_range_by_mapping(seed_range, mapping):
                 print(f'only end of the range in mapping, produced: {range_2}')
 
         # only start of the range included in mapping
-        elif (range_start >= src_start and
+        if (range_start >= src_start and
                 range_start <= src_end and
-                range_end >= src_end):
+                range_end > src_end):
 
             mapped_range_start = range_start - src_start + dst_start
             mapped_range_end = dst_end
@@ -204,24 +205,25 @@ def split_range_by_mapping(seed_range, mapping):
             unmapped_range_start = src_end + 1
             unmapped_range_end = range_end
             range_2 = (unmapped_range_start, unmapped_range_end)
-            #print(f'only start of the range in mapping, produced: {range_1}, {range_2}')
+            print(f'only start of the range in mapping, produced: {range_1}, {range_2}')
 
             if (range_1 not in ranges):
                 ranges.append(range_1)
-                #print(f'only start of the range in mapping, produced: {range_1}')
+                print(f'only start of the range in mapping, produced: {range_1}')
             if (range_2 not in ranges):
                 ranges.append(range_2)
-                #print(f'only start of the range in mapping, produced: {range_2}')
+                print(f'only start of the range in mapping, produced: {range_2}')
         # range outside of mapping
-        else:
+        if ((range_start < src_start and range_end < src_start) or (range_end > src_end and range_start > src_end)):
             curr_range = (range_start, range_end)
 
             if (curr_range not in ranges):
-                if(curr_range == (range_start, range_end) and len(ranges) > 0 ):
+                if(curr_range == (range_start, range_end) and len(ranges) > 0):
                     continue
                 else:
                     ranges.append(curr_range)
-                #print(f'all range outside mapping, produced: {curr_range}')
+                    print(f'all range outside mapping, produced: {curr_range}')
+            continue
 
     if len(ranges) > 1 and ranges[0] == (range_start, range_end):
         return ranges[1:]
@@ -230,34 +232,34 @@ def split_range_by_mapping(seed_range, mapping):
 
 
 def get_seeds_to_check(seeds_ranges, mappings):
-    seeds_to_check = list()
+    min_seeds = list()
     ranges = list()
     for r in seeds_ranges:
         new_ranges = [r]
         for mapping in mappings:
-            #print(f'START: mapping ranges: {new_ranges}')
+            print(f'START: mapping ranges: {new_ranges}')
             temp = list()
             for nr in new_ranges:
-                #print(f'mapping range: {nr}')
+                print(f'mapping range: {nr}')
                 new_range = split_range_by_mapping(nr, mapping)
                 for n in new_range:
                     temp.append(n)
-                #print(f'produced new range: {new_range}')
+                print(f'produced new range: {new_range}')
             new_ranges = []
             for t in temp:
                 new_ranges.append(t)
-            #print(f'DONE: produced new ranges: {new_ranges}\n')
+            print(f'DONE: produced new ranges: {new_ranges}\n')
         ranges.append(new_ranges)
 
         for r in ranges:
             for range_tuple in r:
-                seeds_to_check.append(range_tuple[0])
+                min_seeds.append(range_tuple[0])
 
     print(ranges)
-    print(seeds_to_check)
-    return seeds_to_check
+    print(min_seeds)
+    return min_seeds
 
 
-seeds_to_check = get_seeds_to_check(seeds, mappings)
-min = get_min_location(seeds_to_check, mappings)
+min_seeds = get_seeds_to_check(seeds, mappings)
+min = min(min_seeds)
 print(min)
