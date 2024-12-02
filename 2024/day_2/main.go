@@ -26,7 +26,7 @@ func SolvePart1(inputPath string) int {
 		report := strings.Split(scanner.Text(), " ")
 		reportInts := sliceToInts(report)
 
-		if (checkSafeAsc(reportInts) || checkSafeDsc(reportInts)) {
+		if checkSafeAsc(reportInts) || checkSafeDsc(reportInts) {
 			ans += 1
 		}
 	}
@@ -45,10 +45,14 @@ func SolvePart2(inputPath string) int {
 
 		report := strings.Split(scanner.Text(), " ")
 		reportInts := sliceToInts(report)
-		damps := getDamps(reportInts)
 
-		if checkSafeAsc(reportInts) || checkSafeDsc(reportInts) || checkDamps(damps) {
+		if checkSafeAsc(reportInts) || checkSafeDsc(reportInts) {
 			ans += 1
+		} else {
+			damps := getDamps(reportInts)
+			if checkDamps(damps) {
+				ans += 1
+			}
 		}
 	}
 	return ans
@@ -69,7 +73,7 @@ func sliceToInts(report []string) []int {
 
 func getDamps(report []int) [][]int {
 	dampenedReports := [][]int{}
-	for i, _ := range(report) {
+	for i, _ := range report {
 		damp := make([]int, len(report))
 		copy(damp, report)
 		damp = append(damp[:i], damp[i+1:]...)
@@ -80,7 +84,7 @@ func getDamps(report []int) [][]int {
 }
 
 func checkDamps(damps [][]int) bool {
-	for _, v := range(damps) {
+	for _, v := range damps {
 		if checkSafeAsc(v) || checkSafeDsc(v) {
 			return true
 		}
@@ -90,34 +94,34 @@ func checkDamps(damps [][]int) bool {
 
 func checkSafeAsc(report []int) bool {
 	checked := 0
-		for i, _ := range(report) {
-			if i == 0 {
-				continue
-			}
-			diff := report[i] - report[i-1]
-			if diff > 0 && diff <= 3 {
-				checked += 1
-			}
-			if checked == len(report)-1 {
-				return true
-			}
+	for i, _ := range report {
+		if i == 0 {
+			continue
 		}
-		return false
+		diff := report[i] - report[i-1]
+		if diff > 0 && diff <= 3 {
+			checked += 1
+		}
+		if checked == len(report)-1 {
+			return true
+		}
+	}
+	return false
 }
 
 func checkSafeDsc(report []int) bool {
 	checked := 0
-		for i, _ := range(report) {
-			if i == 0 {
-				continue
-			}
-			diff := report[i-1] - report[i]
-			if diff > 0 && diff <= 3 {
-				checked += 1
-			}
-			if checked == len(report)-1 {
-				return true
-			}
+	for i, _ := range report {
+		if i == 0 {
+			continue
 		}
-		return false
+		diff := report[i-1] - report[i]
+		if diff > 0 && diff <= 3 {
+			checked += 1
+		}
+		if checked == len(report)-1 {
+			return true
+		}
+	}
+	return false
 }
