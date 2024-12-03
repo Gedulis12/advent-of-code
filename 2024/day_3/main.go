@@ -7,11 +7,20 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
+	start1 := time.Now().UnixMicro()
 	fmt.Println(SolvePart1("input"))
+	end1 := time.Now().UnixMicro()
+	fmt.Println("part 1 took: ", end1-start1)
+
+
+	start2 := time.Now().UnixMicro()
 	fmt.Println(SolvePart2("input"))
+	end2 := time.Now().UnixMicro()
+	fmt.Println("part 1 took: ", end2-start2)
 }
 
 func SolvePart1(inputPath string) int {
