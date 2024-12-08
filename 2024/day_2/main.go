@@ -15,7 +15,6 @@ func main() {
 	end1 := time.Now().UnixMicro()
 	fmt.Println("part 1 took: ", end1-start1)
 
-
 	start2 := time.Now().UnixMicro()
 	fmt.Println(SolvePart2("input"))
 	end2 := time.Now().UnixMicro()

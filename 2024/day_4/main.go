@@ -80,17 +80,8 @@ func SolvePart2(inputPath string) int {
 	rows := len(inputMap)
 	cols := len(inputMap[0])
 	for i := 0; i < rows-2; i++ {
-		for j := 0; j < cols-2; j++ {MMMSXXMASM
-			MSAMXMSMSA
-			AMXSXMAAMM
-			MSAMASMSMX
-			XMASAMXAMM
-			XXAMMXXAMA
-			SMSMSASXSS
-			SAXAMASAAA
-			MAMMMXMMMM
-			MXMXAXMASX
-			
+		for j := 0; j < cols-2; j++ {
+
 			xcheck := [][]string{}
 
 			for _, v := range inputMap[i : i+3] {

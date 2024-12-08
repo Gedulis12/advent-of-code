@@ -7,11 +7,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 )
 
 type equation struct {
-	result int
+	result  int
 	numbers []int
 }
 
@@ -58,7 +57,7 @@ func SolvePart1(inputPath string) int {
 		equations = append(equations, equation)
 	}
 
-	for i := range(equations) {
+	for i := range equations {
 		if isValidEquationRTL(equations[i], "+", 0, equations[i].result, false) {
 			ans += equations[i].result
 			continue
@@ -102,7 +101,7 @@ func SolvePart2(inputPath string) int {
 		equations = append(equations, equation)
 	}
 
-	for i := range(equations) {
+	for i := range equations {
 		if isValidEquationRTL(equations[i], "+", 0, equations[i].result, true) {
 			ans += equations[i].result
 			continue
@@ -178,17 +177,17 @@ func isValidEquationLTR(e equation, op string, idx, result int, part2 bool) bool
 }
 
 func isValidEquationRTL(e equation, op string, idx, result int, part2 bool) bool {
-	revIdx := len(e.numbers)-1-idx
+	revIdx := len(e.numbers) - 1 - idx
 
 	if revIdx == 0 {
 		if result == e.numbers[revIdx] {
-				return true
+			return true
 		} else {
 			return false
 		}
 	}
 
-	if op == "*" && result % e.numbers[revIdx] != 0 {
+	if op == "*" && result%e.numbers[revIdx] != 0 {
 		return false
 	}
 

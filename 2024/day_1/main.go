@@ -16,7 +16,6 @@ func main() {
 	end1 := time.Now().UnixMicro()
 	fmt.Println("part 1 took: ", end1-start1)
 
-
 	start2 := time.Now().UnixMicro()
 	fmt.Println(SolvePart2("input"))
 	end2 := time.Now().UnixMicro()
@@ -57,7 +56,7 @@ func SolvePart1(inputPath string) int {
 	slices.Sort(right)
 
 	ans := 0
-	for i, _ := range(left) {
+	for i, _ := range left {
 		diff := left[i] - right[i]
 
 		if diff < 0 {
@@ -95,11 +94,11 @@ func SolvePart2(inputPath string) int {
 
 	freqMap := make(map[int]int)
 
-	for _, v := range(right) {
+	for _, v := range right {
 		freqMap[v] += 1
 	}
 	ans := 0
-	for _, v := range(left) {
+	for _, v := range left {
 		ans += (v * freqMap[v])
 	}
 

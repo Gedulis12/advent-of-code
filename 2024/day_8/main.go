@@ -13,9 +13,8 @@ type point struct {
 
 type antena struct {
 	x, y int
-	val string
+	val  string
 }
-
 
 func main() {
 	start1 := time.Now().UnixMicro()
@@ -41,14 +40,14 @@ func SolvePart1(inputPath string) int {
 	for scanner.Scan() {
 		line := scanner.Text()
 		row := []string{}
-		for i := range(line) {
+		for i := range line {
 			row = append(row, string(line[i]))
 		}
 		freqMap = append(freqMap, row)
 	}
 
 	antenas := []antena{}
-	for i :=range freqMap {
+	for i := range freqMap {
 		for j := range freqMap[i] {
 			if freqMap[i][j] != "." {
 				antena := antena{val: freqMap[i][j], x: j, y: i}
@@ -57,7 +56,7 @@ func SolvePart1(inputPath string) int {
 		}
 	}
 	antinodes := map[point]int{}
-	dimensions := point{y: len(freqMap)-1, x: len(freqMap[0])-1}
+	dimensions := point{y: len(freqMap) - 1, x: len(freqMap[0]) - 1}
 	for i := range antenas {
 		antinodes = findAntinodes(antenas[i], antenas, antinodes, dimensions)
 	}
@@ -78,14 +77,14 @@ func SolvePart2(inputPath string) int {
 	for scanner.Scan() {
 		line := scanner.Text()
 		row := []string{}
-		for i := range(line) {
+		for i := range line {
 			row = append(row, string(line[i]))
 		}
 		freqMap = append(freqMap, row)
 	}
 
 	antenas := []antena{}
-	for i :=range freqMap {
+	for i := range freqMap {
 		for j := range freqMap[i] {
 			if freqMap[i][j] != "." {
 				antena := antena{val: freqMap[i][j], x: j, y: i}
@@ -94,7 +93,7 @@ func SolvePart2(inputPath string) int {
 		}
 	}
 	antinodes := map[point]int{}
-	dimensions := point{y: len(freqMap)-1, x: len(freqMap[0])-1}
+	dimensions := point{y: len(freqMap) - 1, x: len(freqMap[0]) - 1}
 	for i := range antenas {
 		antinodes = findResonantAntinodes(antenas[i], antenas, antinodes, dimensions)
 	}
@@ -103,7 +102,7 @@ func SolvePart2(inputPath string) int {
 	return ans
 }
 
-func findAntinodes(a antena, al []antena, antinodes map[point]int, dimensions point) map[point]int{
+func findAntinodes(a antena, al []antena, antinodes map[point]int, dimensions point) map[point]int {
 
 	for i := range al {
 		xDist := a.x - al[i].x
@@ -111,10 +110,10 @@ func findAntinodes(a antena, al []antena, antinodes map[point]int, dimensions po
 		var xAnti, yAnti int
 
 		if xDist < 0 {
-			xDist = xDist * - 1
+			xDist = xDist * -1
 		}
 		if yDist < 0 {
-			yDist = yDist * - 1
+			yDist = yDist * -1
 		}
 
 		if a.val != al[i].val { // Antenas missmatch
@@ -127,13 +126,13 @@ func findAntinodes(a antena, al []antena, antinodes map[point]int, dimensions po
 		if a.x < al[i].x && xDist > a.x {
 			continue
 		}
-		if a.x > al[i].x && xDist > dimensions.x - a.x {
+		if a.x > al[i].x && xDist > dimensions.x-a.x {
 			continue
 		}
 		if a.y < al[i].y && yDist > a.y {
 			continue
 		}
-		if a.y > al[i].y && yDist > dimensions.y - a.y {
+		if a.y > al[i].y && yDist > dimensions.y-a.y {
 			continue
 		}
 
@@ -155,7 +154,7 @@ func findAntinodes(a antena, al []antena, antinodes map[point]int, dimensions po
 	return antinodes
 }
 
-func findResonantAntinodes(a antena, al []antena, antinodes map[point]int, dimensions point) map[point]int{
+func findResonantAntinodes(a antena, al []antena, antinodes map[point]int, dimensions point) map[point]int {
 
 	for i := range al {
 
@@ -170,10 +169,10 @@ func findResonantAntinodes(a antena, al []antena, antinodes map[point]int, dimen
 		var xAnti, yAnti int
 
 		if xDist < 0 {
-			xDist = xDist * - 1
+			xDist = xDist * -1
 		}
 		if yDist < 0 {
-			yDist = yDist * - 1
+			yDist = yDist * -1
 		}
 
 		if a.val != al[i].val { // Antenas missmatch
@@ -188,13 +187,13 @@ func findResonantAntinodes(a antena, al []antena, antinodes map[point]int, dimen
 		if a.x < al[i].x && xDist > a.x {
 			continue
 		}
-		if a.x > al[i].x && xDist > dimensions.x - a.x {
+		if a.x > al[i].x && xDist > dimensions.x-a.x {
 			continue
 		}
 		if a.y < al[i].y && yDist > a.y {
 			continue
 		}
-		if a.y > al[i].y && yDist > dimensions.y - a.y {
+		if a.y > al[i].y && yDist > dimensions.y-a.y {
 			continue
 		}
 
@@ -204,21 +203,20 @@ func findResonantAntinodes(a antena, al []antena, antinodes map[point]int, dimen
 			newXDist := xDist * idx
 			newYDist := yDist * idx
 
+			if a.x < al[i].x && a.x-newXDist < 0 {
+				resonates = false
+				continue
+			}
+			if a.x > al[i].x && a.x+newXDist > dimensions.x {
+				resonates = false
+				continue
+			}
 
-			if a.x < al[i].x && a.x - newXDist < 0 {
+			if a.y < al[i].y && a.y-newYDist < 0 {
 				resonates = false
 				continue
 			}
-			if a.x > al[i].x && a.x + newXDist > dimensions.x {
-				resonates = false
-				continue
-			}
-
-			if a.y < al[i].y && a.y - newYDist < 0 {
-				resonates = false
-				continue
-			}
-			if a.y > al[i].y && a.y + newYDist > dimensions.y {
+			if a.y > al[i].y && a.y+newYDist > dimensions.y {
 				resonates = false
 				continue
 			}

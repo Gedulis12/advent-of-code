@@ -16,7 +16,6 @@ func main() {
 	end1 := time.Now().UnixMicro()
 	fmt.Println("part 1 took: ", end1-start1)
 
-
 	start2 := time.Now().UnixMicro()
 	fmt.Println(SolvePart2("input"))
 	end2 := time.Now().UnixMicro()
@@ -36,11 +35,11 @@ func SolvePart1(inputPath string) int {
 
 	for scanner.Scan() {
 		expr := re.FindAllString(scanner.Text(), -1)
-		for _, v := range(expr) {
+		for _, v := range expr {
 			validExpressions = append(validExpressions, v)
 		}
 	}
-	for i, _ := range(validExpressions) {
+	for i, _ := range validExpressions {
 		validExpressions[i] = strings.Replace(validExpressions[i], "mul(", "", -1)
 		validExpressions[i] = strings.Replace(validExpressions[i], ")", "", -1)
 		mults := strings.Split(validExpressions[i], ",")
@@ -52,7 +51,7 @@ func SolvePart1(inputPath string) int {
 		if err != nil {
 			panic(err)
 		}
-		ans += (mult1*mult2)
+		ans += (mult1 * mult2)
 	}
 	return ans
 }
@@ -71,11 +70,11 @@ func SolvePart2(inputPath string) int {
 	enabled := true
 	for scanner.Scan() {
 		instructions := re.FindAllString(scanner.Text(), -1)
-		for _, instruction := range(instructions) {
+		for _, instruction := range instructions {
 			if instruction == "do()" {
 				enabled = true
 				continue
-			} 
+			}
 			if instruction == "don't()" {
 				enabled = false
 			}
@@ -85,7 +84,7 @@ func SolvePart2(inputPath string) int {
 			}
 		}
 	}
-	for i, _ := range(validExpressions) {
+	for i, _ := range validExpressions {
 		validExpressions[i] = strings.Replace(validExpressions[i], "mul(", "", -1)
 		validExpressions[i] = strings.Replace(validExpressions[i], ")", "", -1)
 		mults := strings.Split(validExpressions[i], ",")

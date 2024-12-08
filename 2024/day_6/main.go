@@ -99,7 +99,6 @@ func SolvePart2(inputPath string) int {
 
 	visited := walk(input, start, NOOBST, "U", map[step]int{})
 
-
 	cords := []point{}
 	for i := range visited {
 		for j := range visited[i] {
@@ -115,8 +114,8 @@ func SolvePart2(inputPath string) int {
 	var wg sync.WaitGroup
 
 	for i := 0; i < ncpu; i++ {
-		startCord := i*workSplits
-		endCord := i*workSplits+workSplits
+		startCord := i * workSplits
+		endCord := i*workSplits + workSplits
 
 		if endCord > len(cords) {
 			endCord = len(cords)
@@ -125,22 +124,22 @@ func SolvePart2(inputPath string) int {
 			endCord = len(cords)
 		}
 
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				for  _, cord := range(cords[startCord:endCord]) {
-					if walk(input, start, cord, "U", map[step]int{}) == nil {
-						ans += 1
-					}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, cord := range cords[startCord:endCord] {
+				if walk(input, start, cord, "U", map[step]int{}) == nil {
+					ans += 1
 				}
-			}()
+			}
+		}()
 		wg.Wait()
 	}
-//	for _, cord := range cords {
-//		if walk(input, start, cord, "U", map[step]int{}) == nil {
-//			ans += 1
-//		}
-//	}
+	//	for _, cord := range cords {
+	//		if walk(input, start, cord, "U", map[step]int{}) == nil {
+	//			ans += 1
+	//		}
+	//	}
 
 	return ans
 
