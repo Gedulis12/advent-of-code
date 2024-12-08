@@ -59,11 +59,15 @@ func SolvePart1(inputPath string) int {
 	}
 
 	for i := range(equations) {
-		if isValidEquation(equations[i], "+", 0, 0, false) {
+		if isValidEquationRTL(equations[i], "+", 0, equations[i].result, false) {
 			ans += equations[i].result
+			continue
+		}
+		if isValidEquationRTL(equations[i], "*", 0, equations[i].result, false) {
+			ans += equations[i].result
+			continue
 		}
 	}
-
 	return ans
 }
 
@@ -99,16 +103,24 @@ func SolvePart2(inputPath string) int {
 	}
 
 	for i := range(equations) {
-		if isValidEquation(equations[i], "+", 0, 0, true) {
+		if isValidEquationRTL(equations[i], "+", 0, equations[i].result, true) {
 			ans += equations[i].result
+			continue
+		}
+		if isValidEquationRTL(equations[i], "*", 0, equations[i].result, true) {
+			ans += equations[i].result
+			continue
+		}
+		if isValidEquationRTL(equations[i], "||", 0, equations[i].result, true) {
+			ans += equations[i].result
+			continue
 		}
 	}
 
 	return ans
 }
 
-func isValidEquation(e equation, op string, idx, result int, part2 bool) bool {
-//	fmt.Println("Result: ", result, " id: ", idx, " OP: ", op, " Numbers: ", e.numbers, " EQ: ", result, op, e.numbers[idx])
+func isValidEquationLTR(e equation, op string, idx, result int, part2 bool) bool {
 
 	if len(e.numbers)-1 == idx {
 		if op == "+" {
@@ -153,14 +165,73 @@ func isValidEquation(e equation, op string, idx, result int, part2 bool) bool {
 		result = concatInt
 	}
 
-	if isValidEquation(e, "+", idx+1, result, part2) {
+	if isValidEquationLTR(e, "+", idx+1, result, part2) {
 		return true
 	}
-	if isValidEquation(e, "*", idx+1, result, part2) {
+	if isValidEquationLTR(e, "*", idx+1, result, part2) {
 		return true
 	}
-	if part2 && isValidEquation(e, "||", idx+1, result, part2) {
+	if part2 && isValidEquationLTR(e, "||", idx+1, result, part2) {
 		return true
 	}
+	return false
+}
+
+func isValidEquationRTL(e equation, op string, idx, result int, part2 bool) bool {
+	revIdx := len(e.numbers)-1-idx
+
+	if revIdx == 0 {
+		if result == e.numbers[revIdx] {
+				return true
+		} else {
+			return false
+		}
+	}
+
+	if op == "*" && result % e.numbers[revIdx] != 0 {
+		return false
+	}
+
+	if part2 && op == "||" {
+		resStr := fmt.Sprintf("%d", result)
+		numStr := fmt.Sprintf("%d", e.numbers[revIdx])
+		if len(resStr) <= len(numStr) {
+			return false
+		}
+		lastResStr := resStr[len(resStr)-len(numStr):]
+		if lastResStr != numStr {
+			return false
+		}
+	}
+
+	if op == "+" {
+		result = result - e.numbers[revIdx]
+	}
+
+	if op == "*" {
+		result = result / e.numbers[revIdx]
+	}
+
+	if part2 && op == "||" {
+		resStr := fmt.Sprintf("%d", result)
+		numStr := fmt.Sprintf("%d", e.numbers[revIdx])
+		newResStr := resStr[:len(resStr)-len(numStr)]
+		newRes, err := strconv.Atoi(newResStr)
+		if err != nil {
+			panic(err)
+		}
+		result = newRes
+	}
+
+	if isValidEquationRTL(e, "+", idx+1, result, part2) {
+		return true
+	}
+	if isValidEquationRTL(e, "*", idx+1, result, part2) {
+		return true
+	}
+	if part2 && isValidEquationRTL(e, "||", idx+1, result, part2) {
+		return true
+	}
+
 	return false
 }
