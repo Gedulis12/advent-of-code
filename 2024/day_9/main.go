@@ -15,7 +15,7 @@ type file struct {
 
 func main() {
 	start1 := time.Now().UnixMicro()
-	fmt.Println(SolvePart1("example"))
+	fmt.Println(SolvePart1("input"))
 	end1 := time.Now().UnixMicro()
 	fmt.Println("part 1 took: ", end1-start1)
 
@@ -112,60 +112,29 @@ func compact(input []int) []int {
 
 func defrag(input []int) []int {
 	inputCpy := input
-	files := []file{}
-
-	for i := len(inputCpy) - 1; i >= 0; i-- {
-		fileStart := 0
-		fileSize := 0
-		if inputCpy[i] == -1 {
-			continue
-		}
-		if len(files) > 0 && files[len(files)-1].id == inputCpy[i] {
-			continue
-		}
-		fileStart = i
-		for inputCpy[i] == inputCpy[i-fileSize] && i-fileSize > 0 {
-			fileSize++
-		}
-		fileStart = fileStart - fileSize + 1
-		file := file{id: inputCpy[fileStart], start: fileStart, size: fileSize}
-		files = append(files, file)
-	}
+	files := getFiles(input)
+	emptySpace := getEmptySpace(input)
 
 	for i := range files {
 		moved := false
-		for j := 0; j < len(input); j++ {
-			emptyStart := 0
-			emptySize := 0
-
-			if files[i].start < j {
-				j = len(input)
+		for j := 0; j < len(emptySpace); j++ {
+			if files[i].start < emptySpace[j].start {
+				j = len(emptySpace)
 				continue
 			}
-
 			if moved {
-				j = len(input)
+				j = len(emptySpace)
 				continue
 			}
 
-			if inputCpy[j] != -1 {
-				continue
-			}
-			emptyStart = j
-
-			for inputCpy[j+emptySize] == -1 && j+emptySize < len(inputCpy)-1 {
-				emptySize++
-			}
-
-			if emptySize >= files[i].size && files[i].start > emptyStart {
+			if emptySpace[j].size >= files[i].size {
 				for k := 0; k < files[i].size; k++ {
-					inputCpy[emptyStart+k] = inputCpy[files[i].start+k]
+					inputCpy[emptySpace[j].start+k] = inputCpy[files[i].start+k]
 					inputCpy[files[i].start+k] = -1
 				}
+				emptySpace[j].size -= files[i].size
+				emptySpace[j].start += files[i].size
 				moved = true
-			} else {
-				emptyStart = 0
-				emptySize = 0
 			}
 		}
 	}
@@ -181,4 +150,48 @@ func checksum(c []int) int {
 		out += (i * c[i])
 	}
 	return out
+}
+
+func getFiles(input []int) []file {
+	files := []file{}
+
+	for i := len(input) - 1; i >= 0; i-- {
+		fileStart := 0
+		fileSize := 0
+		if input[i] == -1 {
+			continue
+		}
+		if len(files) > 0 && files[len(files)-1].id == input[i] {
+			continue
+		}
+		fileStart = i
+		for input[i] == input[i-fileSize] && i-fileSize > 0 {
+			fileSize++
+		}
+		fileStart = fileStart - fileSize + 1
+		file := file{id: input[fileStart], start: fileStart, size: fileSize}
+		files = append(files, file)
+	}
+	return files
+}
+
+func getEmptySpace(input []int) []file {
+	emptyBlocks := []file{}
+	for j := 0; j < len(input); j++ {
+		emptyStart := 0
+		emptySize := 0
+
+		if input[j] != -1 {
+			continue
+		}
+		emptyStart = j
+
+		for input[j+emptySize] == -1 && j+emptySize < len(input)-1 {
+			emptySize++
+		}
+		emptyBlock := file{id: -1, size: emptySize, start: emptyStart}
+		emptyBlocks = append(emptyBlocks, emptyBlock)
+		j = j + emptySize
+	}
+	return emptyBlocks
 }
