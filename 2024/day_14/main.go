@@ -20,6 +20,7 @@ func main() {
 	end2 := time.Now().UnixMicro()
 	fmt.Println("part 2 took: ", end2-start2)
 }
+
 type point struct {
 	x, y int
 }
@@ -28,7 +29,7 @@ type robot struct {
 	velocity point
 }
 
-var BOUNDS point = point{x: 101, y:103}
+var BOUNDS point = point{x: 101, y: 103}
 
 func SolvePart1(inputPath string) int {
 	file, err := os.Open(inputPath)
@@ -59,7 +60,7 @@ func SolvePart1(inputPath string) int {
 	}
 
 	var q1, q2, q3, q4 int
-	for i := 0; i < len(robots); i ++ {
+	for i := 0; i < len(robots); i++ {
 		moveRobot(&robots[i], 100)
 		px := robots[i].position.x
 		py := robots[i].position.y
@@ -100,7 +101,6 @@ func SolvePart2(inputPath string) int {
 	scanner := bufio.NewScanner(file)
 	ans := 0
 
-
 	robots := []robot{}
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -120,7 +120,6 @@ func SolvePart2(inputPath string) int {
 		velocity := point{x: vx, y: vy}
 		robots = append(robots, robot{position: position, velocity: velocity})
 	}
-
 
 	idx := 0
 	check := true
