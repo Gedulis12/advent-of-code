@@ -124,11 +124,11 @@ func SolvePart2(inputPath string) int {
 	idx := 0
 	check := true
 	for check {
-		grid := [][]string{}
+		grid := [][]byte{}
 		for i := 0; i < BOUNDS.y; i++ {
-			row := []string{}
+			row := []byte{}
 			for j := 0; j < BOUNDS.x; j++ {
-				row = append(row, ".")
+				row = append(row, '.')
 			}
 			grid = append(grid, row)
 		}
@@ -136,13 +136,13 @@ func SolvePart2(inputPath string) int {
 		idx++
 		for i := 0; i < len(robots); i++ {
 			moveRobot(&robots[i], 1)
-			grid[robots[i].position.y][robots[i].position.x] = "X"
+			grid[robots[i].position.y][robots[i].position.x] = 'X'
 		}
 		for i := range grid {
 			for j := 9; j < len(grid[i]); j++ {
 				nineX := true
 				for x := 0; x < 9; x++ {
-					if grid[i][j-x] != "X" {
+					if grid[i][j-x] != 'X' {
 						nineX = false
 						continue
 					}
@@ -155,8 +155,11 @@ func SolvePart2(inputPath string) int {
 			}
 		}
 		if !check {
-			for x := range grid {
-				fmt.Println(grid[x])
+			for i := range grid {
+				for j := range grid[i] {
+					fmt.Printf("%s ", string(grid[i][j]))
+				}
+				fmt.Printf("\n")
 			}
 		}
 	}
