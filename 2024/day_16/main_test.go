@@ -4,22 +4,22 @@ import (
 	"testing"
 )
 
-func TestPart1E1(t *testing.T) {
+func TestE1(t *testing.T) {
 	input := "example1"
-	want := 7036
-	res := SolvePart1(input)
-	if want != res {
-		t.Fatalf("Expected: %d, Got: %d ", want, res)
+	want1, want2 := 7036, 45
+	minimum, locs := SolvePart1And2(input)
+	if want1 != minimum || want2 != locs {
+		t.Fatalf("Expected: %d,%d Got: %d,%d ", want1, want2, minimum, locs)
 	}
-	t.Logf("Expected: %d, Got: %d ", want, res)
+	t.Logf("Expected: %d,%d Got: %d,%d ", want1, want2, minimum, locs)
 }
 
-func TestPart1E2(t *testing.T) {
+func TestE2(t *testing.T) {
 	input := "example2"
-	want := 11048
-	res := SolvePart1(input)
-	if want != res {
-		t.Fatalf("Expected: %d, Got: %d ", want, res)
+	want1, want2 := 11048, 64
+	minimum, locs := SolvePart1And2(input)
+	if want1 != minimum || want2 != locs {
+		t.Fatalf("Expected: %d,%d Got: %d,%d ", want1, want2, minimum, locs)
 	}
-	t.Logf("Expected: %d, Got: %d ", want, res)
+	t.Logf("Expected: %d,%d Got: %d,%d ", want1, want2, minimum, locs)
 }

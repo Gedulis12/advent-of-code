@@ -37,13 +37,12 @@ type node struct {
 
 func main() {
 	start1 := time.Now().UnixMicro()
-	fmt.Println(SolvePart1("example1"))
+	fmt.Println(SolvePart1And2("input"))
 	end1 := time.Now().UnixMicro()
-	fmt.Println("part 1 took: ", end1-start1)
-
+	fmt.Println("solved in: ", end1-start1, " microseconds")
 }
 
-func SolvePart1(inputPath string) int {
+func SolvePart1And2(inputPath string) (int, int) {
 	file, err := os.Open(inputPath)
 	if err != nil {
 		panic(err)
@@ -71,24 +70,36 @@ func SolvePart1(inputPath string) int {
 		findVertInGraph(graph, end, DOWN),
 	}
 
-	ans = dijkstra(graph, src, dst)
+	minimum, paths := dijkstra(graph, src, dst)
+	for i, _ := range paths {
+		for j := range paths[i] {
+			maze[paths[i][j].y][paths[i][j].x] = 'O'
+		}
+	}
+	for i := range maze {
+		for j := range maze[i] {
+			if maze[i][j] == 'O' {
+				ans++
+			}
+		}
+	}
 
-	return ans
+	return minimum, ans
 }
 
-func dijkstra(graph []*node, src *node, dst []*node) int {
+func dijkstra(graph []*node, src *node, dst []*node) (int, [][]point) {
 	dist := make(map[int]int)
 	visited := make(map[int]bool)
-	prev := make(map[int]int)
+	prev := make(map[int][]int)
 
 	for i, _ := range graph {
 		dist[graph[i].id] = MaxInt
 		visited[graph[i].id] = false
+		prev[graph[i].id] = []int{}
 	}
 	dist[src.id] = 0
 
 	for i := 0; i < len(graph); i++ {
-		fmt.Println("checking: ", i, "/", len(graph))
 		u := minDist(dist, visited)
 		if u == -1 {
 			break
@@ -101,35 +112,49 @@ func dijkstra(graph []*node, src *node, dst []*node) int {
 				newDist := dist[u] + edge.score
 				if newDist < dist[edge.dst.id] {
 					dist[edge.dst.id] = newDist
-					prev[edge.dst.id] = u
+					prev[edge.dst.id] = []int{u}
+				} else if newDist == dist[edge.dst.id] {
+					prev[edge.dst.id] = append(prev[edge.dst.id], u)
 				}
 			}
 		}
 	}
 
-	// get minimum distance
 	minimum := dist[dst[0].id]
 	for i := range dst {
 		if dist[dst[i].id] < minimum {
 			minimum = dist[dst[i].id]
 		}
 	}
+	paths := reconstructAllPaths(graph, prev, src.id, dst[0].id)
+	return minimum, paths
+}
 
-	path := []point{}
-	for i := range dst {
-		if dist[dst[i].id] == minimum {
-			currentId := dst[i].id
-			for currentId != src.id {
-				current := getVertById(graph, currentId)
-				path = append([]point{current.loc}, path...)
-				currentId = prev[currentId]
-			}
-			path = append([]point{src.loc}, path...)
+func reconstructAllPaths(graph []*node, prev map[int][]int, srcId int, dstId int) [][]point {
+	var paths [][]point
+	var dfs func(currentId int, currentPath []point)
+
+	dfs = func(currentId int, currentPath []point) {
+		if currentId == srcId {
+			pathCopy := make([]point, len(currentPath))
+			copy(pathCopy, currentPath)
+			paths = append(paths, pathCopy)
+			return
+		}
+
+		current := getVertById(graph, currentId)
+		newPath := append([]point{current.loc}, currentPath...)
+
+		// Recursively explore all previous nodes
+		for _, prevId := range prev[currentId] {
+			dfs(prevId, newPath)
 		}
 	}
 
-	return minimum
+	dfs(dstId, []point{})
+	return paths
 }
+
 func minDist(dist map[int]int, visited map[int]bool) int {
 	mindst := MaxInt
 	nodeId := -1
